@@ -1,5 +1,5 @@
-{%- set traffic_data = c.traffic_ws.data.last.data -%}
-{%- set connections_data = c.connections_ws.data.last.data -%}
+{%- set traffic_data = cc.traffic_ws.data.last.data -%}
+{%- set connections_data = cc.connections_ws.data.last.data -%}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -37,17 +37,18 @@
       <div class="card">
         <div class="title">内存使用情况</div>
         <div class="content">
-          {%- if connections_data.memory %}{{ connections_data.memory | convert_unit }}
-          {%- else %}NaN{% endif -%}
+          {%- if cc.is_meta %}{{ connections_data.memory | convert_unit }}{% else %}需要 Clash Meta{% endif -%}
         </div>
       </div>
     </div>
     <div class="card chart">
-      <img src="" alt="" />
+      <img src="{{ traffic_chart }}" />
     </div>
+    {% if memory_chart -%}
     <div class="card chart">
-      <img src="" alt="" />
+      <img src="{{ memory_chart }}" />
     </div>
+    {%- endif %}
   </div>
 </body>
 

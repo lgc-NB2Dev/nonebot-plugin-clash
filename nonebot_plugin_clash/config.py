@@ -7,6 +7,7 @@ from pydantic import AnyUrl, BaseModel
 class ConfigModel(BaseModel):
     api_timeout: Optional[float]
 
+    clash_need_superuser: bool = True
     clash_controller_url: AnyUrl
     clash_secret: Optional[str] = None
 

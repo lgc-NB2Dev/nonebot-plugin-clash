@@ -64,3 +64,16 @@ def camel_case(string: str, upper_first: bool = False) -> str:
         pfx = pfx.capitalize()
     sfx = "".join(x.capitalize() for x in rest)
     return f"{pfx}{sfx}"
+
+
+def auto_convert_unit(value: float, round_n: int = 2, suffix: str = "") -> str:
+    units = ["B", "KB", "MB", "GB", "TB", "PB"]
+
+    unit = None
+    for x in units:
+        if value < 1000:
+            unit = x
+            break
+        value /= 1024
+
+    return f"{value:.{round_n}f} {unit or units[-1]}{suffix}"
