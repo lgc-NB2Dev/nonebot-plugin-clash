@@ -1,0 +1,54 @@
+{%- set traffic_data = c.traffic_ws.data.last.data -%}
+{%- set connections_data = c.connections_ws.data.last.data -%}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/index.css" />
+</head>
+
+<body>
+  <div class="main">
+    <h1>概览</h1>
+    <div class="card-grid">
+      <div class="card">
+        <div class="title">上传</div>
+        <div class="content">{{ traffic_data.up | convert_unit(suffix="/s") }}</div>
+      </div>
+      <div class="card">
+        <div class="title">下载</div>
+        <div class="content">{{ traffic_data.down | convert_unit(suffix="/s") }}</div>
+      </div>
+      <div class="card">
+        <div class="title">上传总量</div>
+        <div class="content">{{ connections_data.upload_total | convert_unit }}</div>
+      </div>
+      <div class="card">
+        <div class="title">下载总量</div>
+        <div class="content">{{ connections_data.download_total | convert_unit }}</div>
+      </div>
+      <div class="card">
+        <div class="title">活动连接</div>
+        <div class="content">{{ connections_data.connections | length }}</div>
+      </div>
+      <div class="card">
+        <div class="title">内存使用情况</div>
+        <div class="content">
+          {%- if connections_data.memory %}{{ connections_data.memory | convert_unit }}
+          {%- else %}NaN{% endif -%}
+        </div>
+      </div>
+    </div>
+    <div class="card chart">
+      <img src="" alt="" />
+    </div>
+    <div class="card chart">
+      <img src="" alt="" />
+    </div>
+  </div>
+</body>
+
+</html>

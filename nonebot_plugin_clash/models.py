@@ -27,25 +27,26 @@ class TrafficData(BaseModel):
 
 
 class ConnectionMetadata(BaseModel, metaclass=CamelAliasModelMeta):
-    destination_ip: str
-    destination_port: str
-    dns_mode: str
-    host: str
-    inbound_ip: str
-    inbound_name: str
-    inbound_port: str
-    inbound_user: str
     network: str
-    process: str
-    process_path: str
-    remote_destination: str
-    sniff_host: str
-    source_ip: str
-    source_port: str
-    special_proxy: str
-    special_rules: str
     connection_type: str = Field(alias="type")
-    uid: int
+    source_ip: str = Field(alias="sourceIP")
+    destination_ip: str = Field(alias="destinationIP")
+    source_port: str
+    destination_port: str
+    host: str
+    dns_mode: str
+    process_path: str
+    special_proxy: str
+
+    inbound_ip: Optional[str] = Field(None, alias="inboundIP")
+    inbound_name: Optional[str]
+    inbound_port: Optional[str]
+    inbound_user: Optional[str]
+    process: Optional[str]
+    remote_destination: Optional[str]
+    sniff_host: Optional[str]
+    special_rules: Optional[str]
+    uid: Optional[str]
 
 
 class Connection(BaseModel, metaclass=CamelAliasModelMeta):

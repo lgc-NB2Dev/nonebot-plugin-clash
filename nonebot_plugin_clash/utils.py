@@ -18,6 +18,12 @@ class SizedList(Generic[T], List[T]):
         self.size = size
         self._handle_overflow()
 
+    @property
+    def last(self) -> Optional[T]:
+        if self:
+            return self[-1]
+        return None
+
     def _handle_overflow(self) -> None:
         if self.size is None:
             return

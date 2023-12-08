@@ -1,0 +1,60 @@
+* {
+  --bg-color: #202020;
+  --card-bg-color: #24292f;
+  --text-color: #ddd;
+  --text-color-secondary: #ccc;
+
+  --border-radius: 10px;
+  --box-shadow: 0 1px 5px #0000001a;
+
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.main {
+  width: 400px;
+  padding: 20px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: grid;
+  align-items: center;
+  gap: 20px;
+}
+
+.main h1 {
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.segment {
+  margin-bottom: 20px;
+}
+
+.card-grid {
+  border-bottom: 1px solid #0000001a;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.card {
+  padding: 10px;
+  background-color: var(--card-bg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.card .title {
+  font-size: 0.7em;
+  color: var(--text-color-secondary);
+}
+
+.card .content {
+  font-size: 1.1em;
+  padding: 10px 0 0;
+}
+
+.card.chart img {
+  width: 100%;
+}

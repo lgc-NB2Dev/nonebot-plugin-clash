@@ -1,13 +1,12 @@
 import asyncio as aio
-import json
 from contextlib import suppress
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Type, TypeVar
 
+from httpx import AsyncClient
 from nonebot import get_driver, logger
-from nonebot.drivers import HTTPClientMixin, Request, WebSocketClientMixin
-from nonebot.exception import NetworkError
 from pydantic.main import BaseModel
+from websockets.legacy.client import Connect, WebSocketClientProtocol
 from yarl import URL
 
 from .config import config
@@ -23,18 +22,10 @@ from .utils import SizedList
 
 driver = get_driver()
 
-if not (
-    isinstance(driver, WebSocketClientMixin) and isinstance(driver, HTTPClientMixin)
-):
-    raise TypeError(
-        "This plugin requires a Forward driver that supports to be used as a WebSocket client and HTTP client!\n"
-        "本插件需要使用支持作为 WebSocket 客户端 和 HTTP 客户端 使用的 Forward 类型 驱动器！",
-    )
-
 
 TM = TypeVar("TM", bound=BaseModel)
 
-RECONNECT_INTERVAL = 5
+RECONNECT_INTERVAL = 3
 CHART_SIZE = 150
 
 
@@ -55,39 +46,45 @@ class ClashAPIWs(Generic[TM]):
 
         self.data = SizedList[WsData[TM]](size=CHART_SIZE)
         self._task: Optional[aio.Task] = None
+        self._ws: Optional[WebSocketClientProtocol] = None
 
     @property
     def connected(self) -> bool:
-        return bool(self._task and (not self._task.done()))
+        return bool(self._ws and self._ws.open)
 
     async def connect(self) -> None:
         self._task = aio.create_task(self._loop())
 
     async def disconnect(self) -> None:
-        if self._task:
-            self._task.cancel()
-            with suppress(aio.CancelledError):
-                await self._task
-            self._task = None
+        if not self._task:
+            return
+        self._task.cancel()
+        self._task = None
+        self._ws = None
 
     async def _loop(self) -> None:
-        if TYPE_CHECKING:
-            assert isinstance(driver, WebSocketClientMixin)
-
-        params = {"token": self.secret} if self.secret else None
-        request = Request("GET", self.url, params=params, timeout=config.api_timeout)
+        url = str(self.url.with_query(token=self.secret) if self.secret else self.url)
+        connect = Connect(url, ping_timeout=None)
         while True:
             try:
-                async with driver.websocket(request) as ws:
+                async with connect as ws:
+                    self._ws = ws
                     logger.debug(f"Connected to {self.url}")
-                    while True:
-                        data = await ws.receive_text()
-                        self.data.append(WsData(self.model.parse_raw(data)))
+                    while ws.open:
+                        data = await ws.recv()
+                        try:
+                            self.data.append(WsData(self.model.parse_raw(data)))
+                        except Exception:
+                            logger.exception(f"Error when parsing ws data {data}")
             except Exception:
-                logger.opt(exception=True).warning(
-                    f"Error when processing connection to {self.url}, "
-                    f"retrying in {RECONNECT_INTERVAL} seconds...",
-                )
+                logger.exception(f"Error when processing ws connection {self.url}")
+
+            self._ws = None
+            # self.data.clear()
+            logger.error(
+                f"Lost connection to {self.url}, "
+                f"retrying in {RECONNECT_INTERVAL} seconds...",
+            )
             await aio.sleep(RECONNECT_INTERVAL)
 
 
@@ -109,37 +106,24 @@ class ClashAPI:
         return object.__getattribute__(self, name)
 
     async def _call_api(self, path: str, **kwargs) -> Any:
-        if TYPE_CHECKING:
-            assert isinstance(driver, HTTPClientMixin)
-
         headers = {"Authorization": f"Bearer {self.secret}"} if self.secret else None
-        request = Request(
-            "GET",
-            self.url / path,
-            headers=headers,
-            timeout=config.api_timeout,
-            params=kwargs,
-        )
-
-        logger.debug(f"Calling API: {request}")
-        try:
-            response = await driver.request(request)
-        except Exception as e:
-            raise NetworkError("HTTP request failed") from e
-
-        if (response.status_code // 100) != 2:
-            raise NetworkError(
-                "Clash API returned unexpected status code: "
-                f"{response.status_code=}, {response.content=}",
+        async with AsyncClient(base_url=str(self.url)) as cli:
+            logger.debug(f"Calling API {path}")
+            resp = await cli.get(
+                path,
+                headers=headers,
+                timeout=config.api_timeout,
+                params=kwargs,
             )
-        if not response.content:
-            raise NetworkError("Clash API returned empty response")
+            resp.raise_for_status()
 
         if path in API_RETURN_MODEL_MAP:
-            return API_RETURN_MODEL_MAP[path].parse_raw(response.content)
+            return API_RETURN_MODEL_MAP[path].parse_raw(resp.text)
         with suppress(Exception):
-            return json.loads(response.content)
-        return response.content
+            return resp.json()
+        with suppress(Exception):
+            return resp.text
+        return resp.content
 
 
 class ClashController:
@@ -147,38 +131,32 @@ class ClashController:
         self.url = url
         self.secret = secret
 
-        self.api = ClashAPI(url, secret)
-        self.traffic_ws = ClashAPIWs(
-            TrafficData,
-            url,
-            "traffic",
-            secret,
-        )
-        self.connections_ws = ClashAPIWs(
-            ConnectionsData,
-            url,
-            "connections",
-            secret,
-        )
-        self.memory_ws = ClashAPIWs(
-            MemoryData,
-            url,
-            "memory",
-            secret,
-        )
-
         self.version: Optional[Version] = None
+        self.api = ClashAPI(url, secret)
+        self.traffic_ws = ClashAPIWs(TrafficData, url, "traffic", secret)
+        self.connections_ws = ClashAPIWs(ConnectionsData, url, "connections", secret)
+        self.memory_ws = ClashAPIWs(MemoryData, url, "memory", secret)
+
+    @property
+    def is_meta(self) -> bool:
+        if not self.version:
+            raise ValueError("Please call prepare() first")
+        return self.version.meta
 
     @property
     def connected(self) -> bool:
         return (
             self.traffic_ws.connected
             and self.connections_ws.connected
-            and (
-                self.memory_ws.connected
-                if (self.version and self.version.meta)
-                else True
-            )
+            and (self.memory_ws.connected if self.is_meta else True)
+        )
+
+    @property
+    def has_data(self) -> bool:
+        return bool(
+            self.traffic_ws.data
+            and self.connections_ws.data
+            and (self.memory_ws.data if self.is_meta else True),
         )
 
     async def prepare(self) -> None:
