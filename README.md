@@ -3,7 +3,7 @@
 <div align="center">
 
 <a href="https://v2.nonebot.dev/store">
-  <img src="https://raw.githubusercontent.com/A-kirami/nonebot-plugin-template/resources/nbp_logo.png" width="180" height="180" alt="NoneBotPluginLogo">
+  <img src="https://raw.githubusercontent.com/lgc-NB2Dev/readme/main/clash/clash.png" width="180" height="180" alt="NoneBotPluginLogo">
 </a>
 
 <p>
@@ -12,7 +12,7 @@
 
 # NoneBot-Plugin-Clash
 
-_✨ 在 NoneBot 中控制你的 Clash ✨_
+_✨ 在 NoneBot2 中管理 Clash ✨_
 
 <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="python">
 <a href="https://pdm.fming.dev">
@@ -36,9 +36,9 @@ _✨ 在 NoneBot 中控制你的 Clash ✨_
 
 </div>
 
-## 📖 介绍
+<!-- ## 📖 介绍
 
-这里是插件的详细介绍部分
+这里是插件的详细介绍部分 -->
 
 ## 💿 安装
 
@@ -105,25 +105,28 @@ plugins = [
 
 ## ⚙️ 配置
 
-在 nonebot2 项目的`.env`文件中添加下表中的必填配置
+在 NoneBot2 项目的`.env`文件中添加下表中的必填配置
 
-|  配置项  | 必填 | 默认值 |   说明   |
-| :------: | :--: | :----: | :------: |
-| 配置项 1 |  是  |   无   | 配置说明 |
-| 配置项 2 |  否  |   无   | 配置说明 |
+|         配置项         |             必填             | 默认值 |                          说明                           |
+| :--------------------: | :--------------------------: | :----: | :-----------------------------------------------------: |
+| `CLASH_CONTROLLER_URL` | $${\textsf{\color{red}是}}$$ |   无   | Clash 的 `external-controller` 地址，需要带上 `http://` |
+|     `CLASH_SECRET`     |              否              |   无   |     Clash 的 `external-controller` 使用的 `secret`      |
+| `CLASH_NEED_SUPERUSER` |              否              | `True` |          是否只有 `SUPERUSER` 可以触发插件指令          |
 
 ## 🎉 使用
 
-### 指令表
+### 指令
 
-|  指令  | 权限 | 需要@ | 范围 |   说明   |
-| :----: | :--: | :---: | :--: | :------: |
-| 指令 1 | 主人 |  否   | 私聊 | 指令说明 |
-| 指令 2 | 群员 |  是   | 群聊 | 指令说明 |
+#### `clash概览`
 
-### 效果图
+发送一张当前 Clash 运行状态的概览图
 
-如果有效果图的话
+<details>
+<summary>示例（点击展开）</summary>
+
+![概览](https://raw.githubusercontent.com/lgc-NB2Dev/readme/main/clash/summary.jpg)
+
+</details>
 
 ## 📞 联系
 
@@ -134,7 +137,9 @@ Telegram：[@lgc2333](https://t.me/lgc2333)
 
 ## 💡 鸣谢
 
-如果有要鸣谢的人的话
+### [haishanh/yacd](https://github.com/haishanh/yacd)
+
+- 样式借鉴
 
 ## 💰 赞助
 
