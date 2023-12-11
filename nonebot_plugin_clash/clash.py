@@ -64,7 +64,7 @@ class ClashAPIWs(Generic[TM]):
 
     async def _loop(self) -> None:
         url = str(self.url.with_query(token=self.secret) if self.secret else self.url)
-        connect = Connect(url, ping_timeout=None)
+        connect = Connect(url, ping_interval=None)
         while True:
             try:
                 async with connect as ws:
