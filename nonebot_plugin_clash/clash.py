@@ -184,13 +184,13 @@ controller = ClashController(config.clash_controller_url, config.clash_secret)
 
 @driver.on_startup
 async def _():
-    async def connect():
-        await controller.prepare()
+    async def wait_connect() -> None:
         while not controller.connected:
             await aio.sleep(0)
-        logger.opt(colors=True).success(f"<g>Connected to</g> <y>{controller.url}</y>")
 
-    aio.create_task(connect())
+    await controller.prepare()
+    await aio.wait_for(wait_connect(), timeout=config.api_timeout)
+    logger.opt(colors=True).success(f"<g>Connected to</g> <y>{controller.url}</y>")
 
 
 @driver.on_shutdown
