@@ -7,11 +7,11 @@ from matplotlib import pyplot
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
+from .config import config
 from .models import MemoryData, TrafficData, WsData
 from .utils import auto_convert_unit
 
-MULTIPLIER = 2
-CHART_W = 760
+CHART_W = (config.clash_image_width - 30) * 2
 CHART_H = 400
 
 UP_COLOR = "#db4d6d"
@@ -25,11 +25,8 @@ LEGEND_BBOX = (0.5, 1.1)
 
 def get_figure() -> Figure:
     figure = pyplot.figure()
-    figure.set_dpi(figure.dpi * MULTIPLIER)
-    figure.set_size_inches(
-        CHART_W * MULTIPLIER / figure.dpi,
-        CHART_H * MULTIPLIER / figure.dpi,
-    )
+    figure.set_dpi(figure.dpi)
+    figure.set_size_inches(CHART_W / figure.dpi, CHART_H / figure.dpi)
     return figure
 
 

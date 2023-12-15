@@ -8,7 +8,7 @@ from nonebot_plugin_alconna.uniseg import Image, UniMessage
 from .clash import ClashController
 from .clash import controller as main_cc
 from .config import config
-from .render import render_summary
+from .render import render_logs, render_summary
 
 ImageRendererType = Callable[[ClashController], Awaitable[bytes]]
 
@@ -43,3 +43,14 @@ def register_image_command(
 
 
 register_image_command(render_summary, "clash概览")
+register_image_command(render_logs, "clash日志")
+
+
+cmd_clear_logs = on_command("clash清空日志", permission=PERM)
+
+
+@cmd_clear_logs.handle()
+async def handle_clear_logs(matcher: Matcher):
+    # await ensure_connected(matcher, main_cc)
+    main_cc.logs_ws.data.clear()
+    await matcher.finish("日志已清空")

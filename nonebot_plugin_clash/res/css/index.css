@@ -7,13 +7,19 @@
   --border-radius: 10px;
   --box-shadow: 0 1px 5px #0000001a;
 
+  --width: 600px;
+
   margin: 0;
   padding: 0;
+}
+
+body {
   font-family: sans-serif;
+  background-color: var(--bg-color);
 }
 
 .main {
-  width: 400px;
+  width: var(--width);
   padding: 20px;
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -35,7 +41,7 @@
   border-bottom: 1px solid #0000001a;
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .card {
@@ -57,4 +63,39 @@
 
 .card.chart img {
   width: 100%;
+}
+
+.card.log {
+  display: grid;
+  gap: 5px;
+}
+
+.log-line {
+  color: #888;
+  font-size: 0.8em;
+  line-height: 1.35em;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas',
+    'Courier New', 'Courier', sans-serif;
+}
+
+.log-line .time {
+  color: #fb923c;
+}
+
+.log-line .error {
+  color: #c11c1c;
+  font-weight: bold;
+}
+
+.log-line .warn {
+  color: #b99105;
+  font-weight: bold;
+}
+
+.log-line .info {
+  color: #58c3f2;
+}
+
+.log-line .debug {
+  color: #28792c;
 }

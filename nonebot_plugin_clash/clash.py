@@ -13,6 +13,7 @@ from .config import config
 from .models import (
     API_RETURN_MODEL_MAP,
     ConnectionsData,
+    LogData,
     MemoryData,
     TrafficData,
     Version,
@@ -26,7 +27,6 @@ driver = get_driver()
 TM = TypeVar("TM", bound=BaseModel)
 
 RECONNECT_INTERVAL = 3
-CHART_SIZE = 150
 
 
 class ClashAPIWs(Generic[TM]):
@@ -36,6 +36,8 @@ class ClashAPIWs(Generic[TM]):
         base_url: str,
         path: str,
         secret: Optional[str] = None,
+        params: Optional[dict[str, Any]] = None,
+        data_size: int = 150,
     ) -> None:
         self.url = URL(base_url) / path
         self.url = self.url.with_scheme(
@@ -43,8 +45,9 @@ class ClashAPIWs(Generic[TM]):
         )
         self.model = model
         self.secret = secret
+        self.params = params or {}
 
-        self.data = SizedList[WsData[TM]](size=CHART_SIZE)
+        self.data = SizedList[WsData[TM]](size=data_size)
         self._task: Optional[aio.Task] = None
         self._ws: Optional[WebSocketClientProtocol] = None
 
@@ -63,7 +66,10 @@ class ClashAPIWs(Generic[TM]):
         self._ws = None
 
     async def _loop(self) -> None:
-        url = str(self.url.with_query(token=self.secret) if self.secret else self.url)
+        params = self.params.copy()
+        if self.secret:
+            params["token"] = self.secret
+        url = str(self.url.with_query(**params))
         connect = Connect(url, ping_interval=None)
         while True:
             try:
@@ -133,9 +139,35 @@ class ClashController:
 
         self.version: Optional[Version] = None
         self.api = ClashAPI(url, secret)
-        self.traffic_ws = ClashAPIWs(TrafficData, url, "traffic", secret)
-        self.connections_ws = ClashAPIWs(ConnectionsData, url, "connections", secret)
-        self.memory_ws = ClashAPIWs(MemoryData, url, "memory", secret)
+        self.traffic_ws = ClashAPIWs(
+            TrafficData,
+            url,
+            "traffic",
+            secret,
+            data_size=config.clash_chart_width,
+        )
+        self.connections_ws = ClashAPIWs(
+            ConnectionsData,
+            url,
+            "connections",
+            secret,
+            data_size=config.clash_chart_width,
+        )
+        self.logs_ws = ClashAPIWs(
+            LogData,
+            url,
+            "logs",
+            secret,
+            params={"level": config.clash_log_level},
+            data_size=config.clash_log_count,
+        )
+        self.memory_ws = ClashAPIWs(
+            MemoryData,
+            url,
+            "memory",
+            secret,
+            data_size=config.clash_chart_width,
+        )
 
     @property
     def is_meta(self) -> bool:
@@ -148,6 +180,7 @@ class ClashController:
         return (
             self.traffic_ws.connected
             and self.connections_ws.connected
+            and self.logs_ws.connected
             and (self.memory_ws.connected if self.is_meta else True)
         )
 
@@ -165,6 +198,7 @@ class ClashController:
         coroutines = [
             self.traffic_ws.connect(),
             self.connections_ws.connect(),
+            self.logs_ws.connect(),
         ]
         if version.meta:
             coroutines.append(self.memory_ws.connect())
@@ -175,6 +209,7 @@ class ClashController:
         await aio.gather(
             self.connections_ws.disconnect(),
             self.traffic_ws.disconnect(),
+            self.logs_ws.disconnect(),
             self.memory_ws.disconnect(),
         )
 

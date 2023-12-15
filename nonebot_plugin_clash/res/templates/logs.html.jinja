@@ -1,0 +1,14 @@
+{%- extends "base.html.jinja" -%}
+
+{%- block content -%}
+<h1>日志</h1>
+<div class="card log">
+  {% for it in cc.logs_ws.data -%}
+  <div class="log-line">
+    <span class="time">{{ it.time | format_timestamp }}</span>
+    <span class="{{ it.data.level }}">{{ it.data.level.upper() }}</span>
+    {{ it.data.payload }}
+  </div>
+  {%- endfor %}
+</div>
+{%- endblock -%}

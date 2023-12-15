@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from functools import partial
 from pathlib import Path
 from typing import AsyncIterator, Literal
 
@@ -10,7 +11,8 @@ from yarl import URL
 
 from .chart import render_memory_chart, render_traffic_chart
 from .clash import ClashController
-from .utils import auto_convert_unit, b2url
+from .config import config
+from .utils import auto_convert_unit, b2url, format_timestamp
 
 RES_DIR = Path(__file__).parent / "res"
 TEMPLATES_DIR = RES_DIR / "templates"
@@ -22,6 +24,7 @@ TEMPLATE_ENV = jinja2.Environment(
     enable_async=True,
 )
 TEMPLATE_ENV.filters["convert_unit"] = auto_convert_unit
+TEMPLATE_ENV.filters["format_timestamp"] = format_timestamp
 
 
 async def router(route: Route, request: Request):
@@ -54,11 +57,19 @@ async def screenshot_elem(
     return await elem.screenshot(type=image_format, **kwargs)
 
 
-async def render_summary(cc: ClashController) -> bytes:
+async def generic_render(cc: ClashController, template_name: str, **kwargs) -> bytes:
     assert cc.connected
-    template = TEMPLATE_ENV.get_template("summary.html.jinja")
-    html = await template.render_async(
-        cc=cc,
+    template = TEMPLATE_ENV.get_template(template_name)
+    html = await template.render_async(cc=cc, config=config, **kwargs)
+    async with get_routed_page() as page:
+        await page.set_content(html)
+        return await screenshot_elem(page, ".main")
+
+
+async def render_summary(cc: ClashController) -> bytes:
+    return await generic_render(
+        cc,
+        "summary.html.jinja",
         traffic_chart=await b2url(await render_traffic_chart(cc.traffic_ws.data)),
         memory_chart=(
             await b2url(await render_memory_chart(cc.memory_ws.data))
@@ -66,6 +77,6 @@ async def render_summary(cc: ClashController) -> bytes:
             else None
         ),
     )
-    async with get_routed_page() as page:
-        await page.set_content(html)
-        return await screenshot_elem(page, ".main")
+
+
+render_logs = partial(generic_render, template_name="logs.html.jinja")

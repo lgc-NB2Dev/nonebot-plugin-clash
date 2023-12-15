@@ -78,6 +78,11 @@ class Version(BaseModel):
     meta: bool = False
 
 
+class LogData(BaseModel):
+    level: str = Field(alias="type")
+    payload: str
+
+
 API_RETURN_MODEL_MAP = {
     "version": Version,
 }

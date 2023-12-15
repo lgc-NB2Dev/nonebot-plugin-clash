@@ -112,6 +112,10 @@ plugins = [
 | `CLASH_CONTROLLER_URL` | $${\textsf{\color{red}是}}$$ |   无   | Clash 的 `external-controller` 地址，需要带上 `http://` |
 |     `CLASH_SECRET`     |              否              |   无   |     Clash 的 `external-controller` 使用的 `secret`      |
 | `CLASH_NEED_SUPERUSER` |              否              | `True` |          是否只有 `SUPERUSER` 可以触发插件指令          |
+|  `CLASH_CHART_WIDTH`   |              否              | `150`  |                概览中图标的 X 轴最大点数                |
+|   `CLASH_LOG_LEVEL`    |              否              | `info` |                     监控的日志等级                      |
+|   `CLASH_LOG_COUNT`    |              否              |  `50`  |                     保留的日志条数                      |
+|  `CLASH_IMAGE_WIDTH`   |              否              | `600`  | 生成的图片宽度，单位像素（实际结果可能会为此值的两倍）  |
 
 ## 🎉 使用
 
@@ -119,7 +123,7 @@ plugins = [
 
 #### `clash概览`
 
-发送一张当前 Clash 运行状态的概览图
+获取当前 Clash 的运行状态概览
 
 <details>
 <summary>示例（点击展开）</summary>
@@ -127,6 +131,21 @@ plugins = [
 ![概览](https://raw.githubusercontent.com/lgc-NB2Dev/readme/main/clash/summary.jpg)
 
 </details>
+
+#### `clash日志`
+
+获取已记录的 Clash 日志
+
+<details>
+<summary>示例（点击展开）</summary>
+
+![概览](https://raw.githubusercontent.com/lgc-NB2Dev/readme/main/clash/logs.jpg)
+
+</details>
+
+#### `clash清空日志`
+
+清空 Clash 日志记录
 
 ## 📞 联系
 

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="/css/index.css" />
+</head>
+
+<body>
+  <div class="main">{% block content %}{% endblock %}</div>
+</body>
+
+<script>
+  (() => {
+    const styleElem = document.createElement("style");
+    styleElem.innerHTML = `* { --width: {{ config.clash_image_width }}px; }`;
+    document.head.appendChild(styleElem);
+  })();
+</script>
+
+</html>
