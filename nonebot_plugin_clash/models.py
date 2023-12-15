@@ -2,7 +2,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Generic, List, Optional, TypeVar
 
-from pydantic.main import BaseModel, Field, ModelMetaclass
+from pydantic import BaseModel, Field
+from pydantic.main import ModelMetaclass
 
 from .utils import camel_case
 

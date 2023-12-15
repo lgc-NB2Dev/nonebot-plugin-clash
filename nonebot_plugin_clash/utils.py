@@ -1,3 +1,4 @@
+import base64
 from typing import Generic, Iterable, List, Optional, TypeVar, Union, overload
 from typing_extensions import Self
 
@@ -77,3 +78,8 @@ def auto_convert_unit(value: float, round_n: int = 2, suffix: str = "") -> str:
         value /= 1024
 
     return f"{value:.{round_n}f} {unit or units[-1]}{suffix}"
+
+
+async def b2url(data: bytes, mime: str = "image/png") -> str:
+    b64 = base64.b64encode(data).decode()
+    return f"data:{mime};base64,{b64}"
