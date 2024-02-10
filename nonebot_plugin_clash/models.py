@@ -11,7 +11,7 @@ T = TypeVar("T")
 
 
 class CamelAliasModelMeta(ModelMetaclass):
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804
+    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804, ANN001
         kwargs["alias_generator"] = camel_case
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 

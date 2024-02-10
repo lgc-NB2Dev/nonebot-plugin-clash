@@ -5,8 +5,7 @@ from nonebot.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot_plugin_alconna.uniseg import Image, UniMessage
 
-from .clash import ClashController
-from .clash import controller as main_cc
+from .clash import ClashController, controller as main_cc
 from .config import config
 from .render import render_logs, render_summary
 

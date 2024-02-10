@@ -37,12 +37,12 @@ def save_figure(figure: Figure) -> bytes:
     return bio.getvalue()
 
 
-def byte_unit_formatter(v: float, _, **kwargs) -> str:
+def byte_unit_formatter(v: float, _: Any, **kwargs) -> str:
     return auto_convert_unit(v, **kwargs)
 
 
-def timestamp_formatter(t: float, _) -> str:
-    return datetime.fromtimestamp(t).strftime("%H:%M:%S")
+def timestamp_formatter(t: float, _: Any) -> str:
+    return datetime.fromtimestamp(t).strftime("%H:%M:%S")  # noqa: DTZ006
 
 
 def ax_draw_plot(
