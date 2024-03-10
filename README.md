@@ -24,6 +24,9 @@ _✨ 在 NoneBot2 中管理 Clash ✨_
 
 <br />
 
+<a href="https://pydantic.dev">
+  <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/lgc-NB2Dev/readme/main/template/pyd-v1-or-v2.json" alt="Pydantic Version 1 Or 2" >
+</a>
 <a href="./LICENSE">
   <img src="https://img.shields.io/github/license/lgc-NB2Dev/nonebot-plugin-clash.svg" alt="license">
 </a>

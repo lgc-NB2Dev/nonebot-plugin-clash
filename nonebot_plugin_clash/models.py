@@ -2,18 +2,21 @@ import time
 from dataclasses import dataclass, field
 from typing import Generic, List, Optional, TypeVar
 
-from pydantic import BaseModel, Field
-from pydantic.main import ModelMetaclass
+from nonebot.compat import PYDANTIC_V2
+from pydantic import BaseModel, ConfigDict, Field
 
 from .utils import camel_case
 
 T = TypeVar("T")
 
 
-class CamelAliasModelMeta(ModelMetaclass):
-    def __new__(mcs, name, bases, namespace, **kwargs):  # noqa: N804, ANN001
-        kwargs["alias_generator"] = camel_case
-        return super().__new__(mcs, name, bases, namespace, **kwargs)
+class CamelAliasModel(BaseModel):
+    if PYDANTIC_V2:
+        model_config = ConfigDict(alias_generator=camel_case)
+    else:
+
+        class Config:
+            alias_generator = camel_case
 
 
 @dataclass
@@ -27,7 +30,7 @@ class TrafficData(BaseModel):
     down: int
 
 
-class ConnectionMetadata(BaseModel, metaclass=CamelAliasModelMeta):
+class ConnectionMetadata(CamelAliasModel):
     network: str
     connection_type: str = Field(alias="type")
     source_ip: str = Field(alias="sourceIP")
@@ -40,17 +43,17 @@ class ConnectionMetadata(BaseModel, metaclass=CamelAliasModelMeta):
     special_proxy: str
 
     inbound_ip: Optional[str] = Field(None, alias="inboundIP")
-    inbound_name: Optional[str]
-    inbound_port: Optional[str]
-    inbound_user: Optional[str]
-    process: Optional[str]
-    remote_destination: Optional[str]
-    sniff_host: Optional[str]
-    special_rules: Optional[str]
-    uid: Optional[str]
+    inbound_name: Optional[str] = None
+    inbound_port: Optional[str] = None
+    inbound_user: Optional[str] = None
+    process: Optional[str] = None
+    remote_destination: Optional[str] = None
+    sniff_host: Optional[str] = None
+    special_rules: Optional[str] = None
+    # uid: Optional[str] = None
 
 
-class Connection(BaseModel, metaclass=CamelAliasModelMeta):
+class Connection(CamelAliasModel):
     chains: List[str]
     download: int
     connection_id: str = Field(alias="id")
@@ -61,7 +64,7 @@ class Connection(BaseModel, metaclass=CamelAliasModelMeta):
     upload: int
 
 
-class ConnectionsData(BaseModel, metaclass=CamelAliasModelMeta):
+class ConnectionsData(CamelAliasModel):
     connections: List[Connection]
     download_total: int
     upload_total: int

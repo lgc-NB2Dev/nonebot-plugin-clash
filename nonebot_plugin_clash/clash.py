@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Type, TypeVa
 
 from httpx import AsyncClient
 from nonebot import get_driver, logger
-from pydantic.main import BaseModel
+from pydantic import BaseModel
 from websockets.legacy.client import Connect, WebSocketClientProtocol
 from yarl import URL
 
@@ -81,7 +81,7 @@ class ClashAPIWs(Generic[TM]):
                         try:
                             self.data.append(WsData(self.model.parse_raw(data)))
                         except Exception:
-                            logger.exception(f"Error when parsing ws data {data}")
+                            logger.exception(f"Error when parsing ws data {data[:25]}")
             except Exception:
                 logger.exception(f"Error when processing ws connection {self.url}")
 
