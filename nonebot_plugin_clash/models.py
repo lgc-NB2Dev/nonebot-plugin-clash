@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass, field
-from typing import Generic, List, Optional, TypeVar
+from typing import Any, Generic, List, Optional, TypeVar
 
 from cookit.pyd import CamelAliasModel, field_validator
 from nonebot.compat import PYDANTIC_V2
