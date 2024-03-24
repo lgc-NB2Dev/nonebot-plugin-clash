@@ -5,6 +5,7 @@ description = "Manage your clash core using NoneBot2"
 authors = [{ name = "student_2333", email = "lgc2333@126.com" }]
 dependencies = [
     "nonebot2>=2.2.0",
+    "cookit[pydantic]>=0.2.0",
     "nonebot-plugin-alconna>=0.40.1",
     "nonebot-plugin-htmlrender>=0.2.2",
     "yarl>=1.9.4",
