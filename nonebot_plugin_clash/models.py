@@ -62,7 +62,7 @@ class ConnectionsData(CamelAliasModel):
     connections: List[Connection]
     memory: Optional[int] = None
 
-    @field_validator("connections", pre=True)
+    @field_validator("connections", mode="before")
     def _validate_connections(cls, v: Any) -> List[Connection]:
         return [type_validate_python(Connection, x) for x in v] if v else []
 
