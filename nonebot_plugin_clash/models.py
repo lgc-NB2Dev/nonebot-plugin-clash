@@ -2,21 +2,13 @@ import time
 from dataclasses import dataclass, field
 from typing import Generic, List, Optional, TypeVar
 
+from cookit.pyd import CamelAliasModel, field_validator
 from nonebot.compat import PYDANTIC_V2
 from pydantic import BaseModel, ConfigDict, Field
 
 from .utils import camel_case
 
 T = TypeVar("T")
-
-
-class CamelAliasModel(BaseModel):
-    if PYDANTIC_V2:
-        model_config = ConfigDict(alias_generator=camel_case)
-    else:
-
-        class Config:
-            alias_generator = camel_case
 
 
 @dataclass
@@ -67,8 +59,12 @@ class Connection(CamelAliasModel):
 class ConnectionsData(CamelAliasModel):
     download_total: int
     upload_total: int
-    connections: List[Connection] = Field(default_factory=list)
+    connections: List[Connection]
     memory: Optional[int] = None
+
+    @field_validator("connections", pre=True)
+    def _validate_connections(cls, v: Any) -> List[Connection]:
+        return [type_validate_python(Connection, x) for x in v] if v else []
 
 
 class MemoryData(BaseModel):
