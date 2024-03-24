@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Type, TypeVa
 
 from httpx import AsyncClient
 from nonebot import get_driver, logger
+from nonebot.compat import type_validate_json
 from pydantic import BaseModel
 from websockets.legacy.client import Connect, WebSocketClientProtocol
 from yarl import URL
@@ -79,7 +80,7 @@ class ClashAPIWs(Generic[TM]):
                     while ws.open:
                         data = await ws.recv()
                         try:
-                            self.data.append(WsData(self.model.parse_raw(data)))
+                            self.data.append(WsData(type_validate_json(self.model, data)))
                         except Exception:
                             logger.exception(f"Error when parsing ws data {data[:25]}")
             except Exception:
@@ -124,7 +125,7 @@ class ClashAPI:
             resp.raise_for_status()
 
         if path in API_RETURN_MODEL_MAP:
-            return API_RETURN_MODEL_MAP[path].parse_raw(resp.text)
+            return type_validate_json(API_RETURN_MODEL_MAP[path], resp.text)
         with suppress(Exception):
             return resp.json()
         with suppress(Exception):
