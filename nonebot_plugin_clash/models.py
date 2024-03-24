@@ -67,7 +67,7 @@ class Connection(CamelAliasModel):
 class ConnectionsData(CamelAliasModel):
     download_total: int
     upload_total: int
-    connections: Optional[List[Connection]] = None
+    connections: List[Connection] = Field(default_factory=list)
     memory: Optional[int] = None
 
 
