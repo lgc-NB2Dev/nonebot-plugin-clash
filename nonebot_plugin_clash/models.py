@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Any, Generic, List, Optional, TypeVar
 
 from cookit.pyd import CamelAliasModel, field_validator
-from nonebot.compat import PYDANTIC_V2
+from nonebot.compat import PYDANTIC_V2, type_validate_python
 from pydantic import BaseModel, ConfigDict, Field
 
 from .utils import camel_case
