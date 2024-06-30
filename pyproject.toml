@@ -4,16 +4,16 @@ version = "0.1.0"
 description = "Manage your clash core using NoneBot2"
 authors = [{ name = "student_2333", email = "lgc2333@126.com" }]
 dependencies = [
-    "nonebot2>=2.2.0",
-    "cookit[pydantic]>=0.2.0",
-    "nonebot-plugin-alconna>=0.40.1",
-    "nonebot-plugin-htmlrender>=0.2.2",
+    "nonebot2>=2.3.1",
+    "cookit[pydantic]>=0.6.5",
+    "nonebot-plugin-alconna>=0.48.0",
+    "nonebot-plugin-htmlrender>=0.3.2",
     "yarl>=1.9.4",
-    "jinja2>=3.1.2",
+    "jinja2>=3.1.4",
     "websockets>=12.0",
-    "httpx>=0.24",
-    "matplotlib>=3.7.4",
-    "numpy>=1.24.4",
+    "httpx>=0.27.0",
+    "matplotlib>=3.9.0",
+    "numpy>=1.26.4",
 ]
 requires-python = ">=3.9,<4.0"
 readme = "README.md"
