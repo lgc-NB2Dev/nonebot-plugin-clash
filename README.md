@@ -37,6 +37,15 @@ _✨ 在 NoneBot2 中管理 Clash ✨_
   <img src="https://img.shields.io/pypi/dm/nonebot-plugin-clash" alt="pypi download">
 </a>
 
+<br />
+
+<a href="https://registry.nonebot.dev/plugin/nonebot-plugin-clash:nonebot_plugin_clash">
+  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fnbbdg.lgc2333.top%2Fplugin%2Fnonebot-plugin-clash" alt="NoneBot Registry">
+</a>
+<a href="https://registry.nonebot.dev/plugin/nonebot-plugin-clash:nonebot_plugin_clash">
+  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fnbbdg.lgc2333.top%2Fplugin-adapters%2Fnonebot-plugin-clash" alt="Supported Adapters">
+</a>
+
 </div>
 
 <!-- ## 📖 介绍
