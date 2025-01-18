@@ -2,7 +2,7 @@
 name = "nonebot-plugin-clash"
 version = "0.1.0"
 description = "Manage your clash core using NoneBot2"
-authors = [{ name = "student_2333", email = "lgc2333@126.com" }]
+authors = [{ name = "LgCookie", email = "lgc2333@126.com" }]
 dependencies = [
     "nonebot2>=2.3.1",
     "cookit[pydantic]>=0.6.5",
